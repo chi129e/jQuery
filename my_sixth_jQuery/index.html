@@ -24,11 +24,11 @@
 
         $(function () {
 
-            //改行を含まない文字数を取得
-            $('.input').text().replace(/\s+/g, '').length;
-            //カウントダウン30文字を超えた場合、超過文字数を表示
+            //文字入力後にイベントを発火
             $(".input").on('keyup', function () {
-                var remain = 30 - $(this).val().length;
+
+                //カウントダウン30文字を超えた場合、超過文字数を表示し、改行を含まない文字数を取得
+                var remain = 30 - $(this).val().replace(/\s+/g, "").length;
                 $('.lest-count').text(remain);
 
                 //超過文字数は赤くする
