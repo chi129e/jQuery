@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>api test</title>
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="container">
+            <div class="header">
+                <p class="header__title">Search Books!</p>
+            </div>
+            <div class="search">
+                <div class="search__text">
+                    <input type="text" id="js-search-word" class="search__text__input" value="" placeholder="検索する">
+                </div>
+                <button id="js-search-button" class="search__btn">検索する</button>
+            </div>
+            <ul class="lists">
+
+            </ul>
+        </div>
+    </div>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript">
+        // 楽天ブックスの総合検索APIを使って製作してください。
+        // answerの挙動を良く見てね！
+        $(function () {
+
+            //検索ボタンを押したらイベント発生
+            $('#js-search-button').on('click', function () {
+
+                //入力した値を取得し、keywordに格納。
+                var keyword = $('#js-search-word').val();
+
+                // 検索実行するURL(楽天ブックス)から取得
+                $.get('https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?', {
+                    //IDは今回アンサーと同じ物を使用
+                    applicationId: "1013041242368735405",
+                    //検索のキーワード
+                    keyword: keyword,
+                    booksGenreId: '001',
+                    hits: '20'
+                },
+
+                    //取得した情報を使用
+                    function (data) {
+
+                        //dataが０より多かった場合、作品を表示(※検索のたびに表示している物を消す)
+                        if (data.count > 0) {
+                            $(".comment").remove();
+                            $("ul").empty();
+                            var list = "";
+
+                            for (var i = 0; i < data.Items.length; i++) {
+                                list += `<li class=lists__item>` +
+                                    `<div class=lists__item__inner>` +
+                                    `<a href=${data.Items[i].Item.itemUrl} class=lists__item__link target=_blank>` +
+                                    `<img src=${data.Items[i].Item.largeImageUrl} class=lists__item__img alt>` +
+                                    `<p class=lists__item__detail>作品名：　${data.Items[i].Item.title}</p>` +
+                                    `<p class=lists__item__detail>作者　：　${data.Items[i].Item.author}</p>` +
+                                    `<p class=lists__item__detail>出版社：　${data.Items[i].Item.publisherName}</p>` + `</a>` +
+                                    `</div>` + `</li>`;
+                            };
+
+                            //ul要素の前に挿入させる
+                            $(".lists").prepend(list);
+
+                            //dataが０だった場合、メッセージを表示(※作品は削除しメッセージのみにする)
+                        } else if (data.count === 0) {
+                            $("ul").empty();
+                            $(".lists").before("<div class='comment'></div>");
+                            $(".comment").html("<p class='message'>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>");
+                        }
+
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>
